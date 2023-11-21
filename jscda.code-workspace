@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "../../jscda"
+		},
+		{
+			"path": "../secu"
+		},
+		{
+			"path": "."
+		}
+	],
+	"settings": {}
+}
