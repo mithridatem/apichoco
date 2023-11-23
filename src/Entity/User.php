@@ -19,7 +19,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
-    #[Groups('user')]
+    #[Groups(['user', 'choco'])]
     private ?string $email = null;
 
     #[ORM\Column]
@@ -32,15 +32,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $password = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups('user', 'choco')]
+    #[Groups(['user', 'choco'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups('user', 'choco')]
+    #[Groups(['user', 'choco'])]
     private ?string $firstname = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups('user', 'choco')]
+    #[Groups('user')]
     private ?string $token = null;
 
     #[ORM\Column]
