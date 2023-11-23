@@ -26,7 +26,11 @@ class RegisterController extends AbstractController
             $data = $serializerInterface->decode($json, 'json');
             //test le compte existe déja
             if($repo->findOneBy(["email"=>$data["email"]])){
-                return $this->json(["error"=>"le compte existe déja"], 200,
+                return $this->json(["error"=>"le compte existe déja"], 400,
+                ['Content-Type'=>'application/json', 'Access-Control-Allow-Origin'=>'*']);
+            }
+            if($data['name']==""AND $data['firstname']==""AND $data['email']==""AND $data['password']=""){
+                return $this->json(["error"=>"Veuillez remplir tous les champs"], 400,
                 ['Content-Type'=>'application/json', 'Access-Control-Allow-Origin'=>'*']);
             }
             //new user
