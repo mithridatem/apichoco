@@ -95,9 +95,9 @@ class RegisterController extends AbstractController
             //récupération du compte
             $user = $repo->findOneBy(["email"=>$data["email"]]);
 
-            dd($user);
             //test si le compte existe
             if($user){
+                dd($hash->isPasswordValid($user, $data["password"]));
                 //test password valide
                 if($hash->isPasswordValid($user, $data["password"])){
                     $token = $user->getToken();
