@@ -99,7 +99,7 @@ class RegisterController extends AbstractController
                 //test password valide
                 if($hash->isPasswordValid($user, $data["password"])){
                     $token = $user->getToken();
-                    return $this->json(["token"=>$token],200,
+                    return $this->json(["token"=>$token, "id"=>$user->getId()],200,
                     ['Content-Type'=>'application/json','Access-Control-Allow-Origin'=>'*']);
                 }
                 //test le password est invalide
