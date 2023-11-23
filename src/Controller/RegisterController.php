@@ -179,4 +179,28 @@ class RegisterController extends AbstractController
             'Access-Control-Allow-Origin'=>'*']);
         }
     }
+    //méthode qui récupére les informations du compte par son nom et prénom
+    #[Route('/user/info',name:'app_register_info')]
+    public function getUserByInfo(Request $request,UserRepository $userRepository,
+    SerializerInterface $serializerInterface):Response{
+        $json = $request->getContent();
+        //test si le json est valide
+        if($json){
+            $data = $serializerInterface->decode($json, 'json');
+            $user = $userRepository->findOneBy(['name'=>$data['name'], 'firstname'=>$data['firstname']]);
+            if($user){
+                return $this->json($user,200,['Content-Type'=>'application/json', 'Access-Control-Allow-Origin'=>'*'],
+                ['groups'=>'user']);
+            }
+            else{
+                return $this->json(['error'=>'Le compte n\'existe pas'],400,
+                ['Content-Type'=>'application/json','Access-Control-Allow-Origin'=>'*']);
+            }
+        }
+        //test si le json est invalide
+        else{
+            return $this->json(['error'=>'Json invalide'],400,
+            ['Content-Type'=>'application/json','Access-Control-Allow-Origin'=>'*']);
+        }
+    }
 }
