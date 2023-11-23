@@ -59,7 +59,7 @@ class ChocoblastController extends AbstractController
         }
     }
     //méthode pour afficher un chocoblast par son id
-    #[Route('/chocoblast/id{id}', name:'app_chocoblast_id')]
+    #[Route('/chocoblast/id/{id}', name:'app_chocoblast_id')]
     public function getChocoblastById($id,ChocoblastRepository $chocoblastRepository):Response{
         $choco = $chocoblastRepository->find($id);
         if($choco){
