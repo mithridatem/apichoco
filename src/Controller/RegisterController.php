@@ -223,4 +223,17 @@ class RegisterController extends AbstractController
             return $this->json(['error'=>'Json Invalide'],400,['Content-Type'=>'application/json', 'Access-Control-Allow-Origin'=>'*']);
         }
     }
+
+    //liste des utilisateurs trié par nom et prénom croissant
+    #[Route('/user/all/{order}', name:'app_register_all_order')]
+    public function getAllUserOrder(UserRepository $repo, $order):Response{
+        $users = $repo->findBy([],['name'=>$order, 'firstname'=>$order], null, null);
+        if($users){
+            return $this->json($users,200,['Content-Type'=>'application/json',
+            'Access-Control-Allow-Origin'=>'*'],['groups'=>'user']);
+        }else{
+            return $this->json(["error"=>"La base est vide"],400,['Content-Type'=>'application/json',
+            'Access-Control-Allow-Origin'=>'*']);
+        }
+    }
 }

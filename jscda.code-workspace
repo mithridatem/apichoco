@@ -14,9 +14,6 @@
 		},
 		{
 			"path": "../../xampp2/htdocs/meteo"
-		},
-		{
-			"path": "../../symfony/numerix"
 		}
 	],
 	"settings": {
