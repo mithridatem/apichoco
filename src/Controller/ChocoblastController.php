@@ -70,4 +70,5 @@ class ChocoblastController extends AbstractController
             'Access-Control-Allow-Origin'=>'*']);
         }
     }
+    //méthode pour
 }
