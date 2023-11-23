@@ -44,7 +44,7 @@ class RegisterController extends AbstractController
             $pass = $data['password'];
             $hash = $hash->hashPassword($user, $pass);
             $user->setPassword($hash);
-            $user->setToken(md5("tk".$data['name'].$data["firstname"].$data['password']."2023"));
+            $user->setToken(md5("tk".$data['name'].$data["firstname"]."2023"));
             $user->setActivated(true);
             $user->setRoles(["ROLE_USER"]);
             //persist
@@ -106,7 +106,7 @@ class RegisterController extends AbstractController
                 }
                 //test le password est invalide
                 else{
-                    return $this->json(["error"=>"informations de connexion invalide"],400,
+                    return $this->json(["error"=>"password invalide"],400,
                     ['Content-Type'=>'application/json','Access-Control-Allow-Origin'=>'*']);
                 }
             }
