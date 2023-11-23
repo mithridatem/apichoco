@@ -63,8 +63,11 @@ class ChocoblastController extends AbstractController
     public function getChocoblastById($id,ChocoblastRepository $chocoblastRepository):Response{
         $choco = $chocoblastRepository->find($id);
         if($choco){
-            return $this->json($chocos,200,['Content-Type'=>'application/json',
+            return $this->json($choco,200,['Content-Type'=>'application/json',
             'Access-Control-Allow-Origin'=>'*'],['groups'=>'choco']);
+        }else{
+            return $this->json(['error'=>'le chocoblast n\'existe pas'],400,['Content-Type'=>'application/json',
+            'Access-Control-Allow-Origin'=>'*']);
         }
     }
 }
