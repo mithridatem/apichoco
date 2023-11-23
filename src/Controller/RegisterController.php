@@ -203,4 +203,24 @@ class RegisterController extends AbstractController
             ['Content-Type'=>'application/json','Access-Control-Allow-Origin'=>'*']);
         }
     }
+
+    //test password
+    #[Route('/user/password/test', name:'app_register_password_test')]
+    public function testPassword(Request $request,UserRepository $userRepository,
+    SerializerInterface $serializerInterface,UserPasswordHasherInterface $hash):Response{
+        $json = $request->getContent();
+        if($json){
+            $data = $serializerInterface->decode($json, 'json');
+            $user = $userRepository->findOneBy(['token'=>$data['token']]);
+            $password = $data['password'];
+            $test = $hash->isPasswordValid($user,$password);
+            if($test){
+                return $this->json(['error'=>'Ok'],200,['Content-Type'=>'application/json', 'Access-Control-Allow-Origin'=>'*']);
+            }else{
+                return $this->json(['error'=>'Invalide'],400,['Content-Type'=>'application/json', 'Access-Control-Allow-Origin'=>'*']);
+            }
+        }else{
+            return $this->json(['error'=>'Json Invalide'],400,['Content-Type'=>'application/json', 'Access-Control-Allow-Origin'=>'*']);
+        }
+    }
 }
