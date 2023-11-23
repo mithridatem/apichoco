@@ -97,7 +97,7 @@ class RegisterController extends AbstractController
 
             //test si le compte existe
             if($user){
-                dd($hash->isPasswordValid($user, "1234"));
+                
                 //test password valide
                 if($hash->isPasswordValid($user, $data["password"])){
                     $token = $user->getToken();
