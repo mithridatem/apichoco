@@ -16,6 +16,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\GeneratedValue]
     #[ORM\Column]
     #[Groups('user')]
+    #[Groups('choco')]
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
@@ -33,10 +34,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 255)]
     #[Groups('user')]
+    #[Groups('choco')]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
     #[Groups('user')]
+    #[Groups('choco')]
     private ?string $firstname = null;
 
     #[ORM\Column(length: 255, nullable: true)]

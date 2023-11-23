@@ -5,31 +5,37 @@ namespace App\Entity;
 use App\Repository\ChocoblastRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-
+use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Entity(repositoryClass: ChocoblastRepository::class)]
 class Chocoblast
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups('choco')]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups('choco')]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups('choco')]
     private ?string $content = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Groups('choco')]
     private ?\DateTimeInterface $creation_date = null;
 
     #[ORM\Column]
     private ?bool $activated = null;
 
     #[ORM\ManyToOne]
+    #[Groups('choco')]
     private ?User $author = null;
 
     #[ORM\ManyToOne]
+    #[Groups('choco')]
     private ?User $target = null;
 
     public function getId(): ?int

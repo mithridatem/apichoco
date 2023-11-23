@@ -8,7 +8,15 @@
 		},
 		{
 			"path": "."
+		},
+		{
+			"path": "../../symfony/meteo"
+		},
+		{
+			"path": "../../xampp2/htdocs/meteo"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "meteo"
+	}
 }
