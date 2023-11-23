@@ -94,6 +94,8 @@ class RegisterController extends AbstractController
             $data = $serializerInterface->decode($json,'json');
             //récupération du compte
             $user = $repo->findOneBy(["email"=>$data["email"]]);
+
+            dd($user);
             //test si le compte existe
             if($user){
                 //test password valide
