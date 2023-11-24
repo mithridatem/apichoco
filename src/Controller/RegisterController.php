@@ -259,8 +259,8 @@ class RegisterController extends AbstractController
         //test json valide
         if ($json) {
             $data = $this->serializer->decode($json, 'json');
-            $user = $this->userRepository->findOneBy(['token' => $data['token']]);
-            $password = $data['password'];
+            $user = $this->userRepository->findOneBy(["token" => $data["token"]]);
+            $password = $data["password"];
             $test = $this->hash->isPasswordValid($user, $password);
             //test password valide
             if ($test) {
