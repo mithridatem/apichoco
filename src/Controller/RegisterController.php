@@ -26,7 +26,7 @@ class RegisterController extends AbstractController
             //dd($json);
             //encodage en tableau
             $data = $serializerInterface->decode($json, 'json');
-            dd($data);
+            
             if($data['name']==""OR $data['firstname']==""OR $data['email']==""OR $data['password1']=""){
                 return $this->json(["error"=>"Veuillez remplir tous les champs"], 400,
                 ['Content-Type'=>'application/json', 'Access-Control-Allow-Origin'=>'*']);
@@ -43,8 +43,8 @@ class RegisterController extends AbstractController
             $user->setFirstname($data['firstname']);
             $user->setEmail($data['email']);
             //création du hash
-            $pass = $data['password1'];
-            dd($data);
+            $pass = $data['password'];
+            dd($pass);
             $hash = $hash->hashPassword($user, $pass);
             $user->setPassword($hash);
             $user->setToken(md5("tk".$data['name'].$data["firstname"]."2023"));
