@@ -61,7 +61,7 @@ class RegisterController extends AbstractController
                 $pass = $data["password"];
                 $hash = $this->hash->hashPassword($user, $pass);
                 $user->setPassword($hash);
-                $user->setToken(md5("tk".$data["name"].$data["firstname"].rand()."2023"));
+                $user->setToken(md5("tk".$data["name"].$data["firstname"].$data["email"].rand()."2023"));
                 $user->setActivated(true);
                 $user->setRoles(["ROLE_USER"]);
                 //persist
