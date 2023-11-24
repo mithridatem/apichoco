@@ -209,41 +209,40 @@ class RegisterController extends AbstractController
     }
     //update du password
     #[Route('/user/update/password', name: 'app_register_update_password')]
-    public function updatePassword(
-        Request $request,
-        UserRepository $repo,
-        UserPasswordHasherInterface $hash,
-        EntityManagerInterface $em,
-        SerializerInterface $serializerInterface
-    ): Response {
+    public function updatePassword(Request $request): Response {
+        $message = "";
+        $code = 200;
+        //recupération du Json
         $json = $request->getContent();
+        //test si le json est valide
         if ($json) {
-            $data = $serializerInterface->decode($json, 'json');
-            //test si le compte existe
-            $user = $repo->findOneBy(["token" => $data["token"]]);
-            if ($user) {
-                $hash = $hash->hashPassword($user, $data["password"]);
+            //sérialisation en Tableau
+            $data = $this->serializer->decode($json, 'json');
+            $user = $this->userRepository->findOneBy(["token" => $data["token"]]);
+            //test si le compte existe et données non vide
+            if ($user AND !empty($data["password"]) AND !empty($data["token"])) {
+                $hash = $this->hash->hashPassword($user, $data["password"]);
                 $user->setPassword($hash);
-                $em->persist($user);
-                $em->flush();
-                return $this->json(["error" => "Password update"], 200, [
-                    'Content-Type' => 'application/json',
-                    'Access-Control-Allow-Origin' => '*'
-                ]);
+                $this->em->persist($user);
+                $this->em->flush();
+                $message = ["error" => "Password update"];
             }
             //test le compte n'existe pas
             else {
-                return $this->json(["error" => "Le compte n'existe pas"], 400, [
-                    'Content-Type' => 'application/json',
-                    'Access-Control-Allow-Origin' => '*'
-                ]);
+                $message = ["error" => "Le compte n'existe pas"];
+                $code = 400;
             }
-        } else {
-            return $this->json(["error" => "json invalide"], 400, [
-                'Content-Type' => 'application/json',
-                'Access-Control-Allow-Origin' => '*'
-            ]);
         }
+        //test si le json est invalide 
+        else {
+            $message = ["error" => "json invalide"];
+            $code = 400;
+        }
+        //retour du json
+        return $this->json($message,$code, [
+            'Content-Type' => 'application/json',
+            'Access-Control-Allow-Origin' => '*'
+        ]);
     }
     //méthode qui récupére les informations du compte par son nom et prénom
     #[Route('/user/info', name: 'app_register_info')]
