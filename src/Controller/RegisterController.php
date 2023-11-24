@@ -260,15 +260,22 @@ class RegisterController extends AbstractController
         if ($json) {
             $data = $this->serializer->decode($json, 'json');
             $user = $this->userRepository->findOneBy(["token" => $data["token"]]);
-            $password = $data["password"];
-            $test = $this->hash->isPasswordValid($user, $password);
-            //test password valide
-            if ($test) {
-                $message = ['error' => 'Ok'];
-            } 
+            if($user){
+                $password = $data["password"];
+                $test = $this->hash->isPasswordValid($user, $password);
+                //test password valide
+                if ($test) {
+                    $message = ['error' => 'Ok'];
+                }
+                //test passord invalide
+                else{
+                    $message = ['error' => 'Invalide'];
+                    $code = 400;
+                } 
+            }
             //test password incorrect
             else {
-                $message = ['error' => 'Invalide'];
+                $message = ['error' => 'Le compte n\'existe pas'];
                 $code = 400;
             }
         } 
