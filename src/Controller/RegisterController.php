@@ -252,26 +252,33 @@ class RegisterController extends AbstractController
     }
     //test password
     #[Route('/user/password/test', name: 'app_register_password_test')]
-    public function testPassword(
-        Request $request,
-        UserRepository $userRepository,
-        SerializerInterface $serializerInterface,
-        UserPasswordHasherInterface $hash
-    ): Response {
+    public function testPassword(Request $request): Response {
+        $message = "";
+        $code = 200;
         $json = $request->getContent();
+        //test json valide
         if ($json) {
-            $data = $serializerInterface->decode($json, 'json');
-            $user = $userRepository->findOneBy(['token' => $data['token']]);
+            $data = $this->serializer->decode($json, 'json');
+            $user = $this->userRepository->findOneBy(['token' => $data['token']]);
             $password = $data['password'];
-            $test = $hash->isPasswordValid($user, $password);
+            $test = $this->hash->isPasswordValid($user, $password);
+            //test password valide
             if ($test) {
-                return $this->json(['error' => 'Ok'], 200, ['Content-Type' => 'application/json', 'Access-Control-Allow-Origin' => '*']);
-            } else {
-                return $this->json(['error' => 'Invalide'], 400, ['Content-Type' => 'application/json', 'Access-Control-Allow-Origin' => '*']);
+                $message = ['error' => 'Ok'];
+            } 
+            //test password incorrect
+            else {
+                $message = ['error' => 'Invalide'];
+                $code = 400;
             }
-        } else {
-            return $this->json(['error' => 'Json Invalide'], 400, ['Content-Type' => 'application/json', 'Access-Control-Allow-Origin' => '*']);
+        } 
+        //test json invalide
+        else {
+            $message = ['error' => 'Json Invalide'];
+            $code = 400;
         }
+        return $this->json($message,$code,
+        ['Content-Type' => 'application/json', 'Access-Control-Allow-Origin' => '*']);
     }
 
     //liste des utilisateurs trié par nom et prénom croissant
