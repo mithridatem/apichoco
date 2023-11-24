@@ -219,13 +219,26 @@ class RegisterController extends AbstractController
             //sérialisation en Tableau
             $data = $this->serializer->decode($json, 'json');
             $user = $this->userRepository->findOneBy(["token" => $data["token"]]);
+            //test si les champs sont bien vides
+            if(empty($data["newpassword"]) OR empty($data["token"]) OR empty($data["oldpassword"])){
+                $message = ["error" => "veuillez renseigner toutes les valeurs"];
+                $code = 400;
+            }
             //test si le compte existe et données non vide
-            if ($user AND !empty($data["password"]) AND !empty($data["token"])) {
-                $hash = $this->hash->hashPassword($user, $data["password"]);
-                $user->setPassword($hash);
-                $this->em->persist($user);
-                $this->em->flush();
-                $message = ["error" => "Password update"];
+            else if ($user) {
+                //test l'ancien mot de passe est valide
+                if($this->hash->isPasswordValid($user, $data["oldpassword"])){
+                    $hash = $this->hash->hashPassword($user, $data["newpassword"]);
+                    $user->setPassword($hash);
+                    $this->em->persist($user);
+                    $this->em->flush();
+                    $message = ["error" => "Password update"];
+                }
+                //l'ancien mot de passe est invalide
+                else{
+                    $message = ["error" => "l'ancien Password est incorrect"];
+                    $code = 400;
+                }
             }
             //test le compte n'existe pas
             else {
