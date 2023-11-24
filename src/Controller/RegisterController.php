@@ -12,6 +12,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\SerializerInterface;
 use App\Service\ApiTokenService;
+use App\Service\UtilsService;
 
 class RegisterController extends AbstractController
 {
@@ -54,14 +55,15 @@ class RegisterController extends AbstractController
                 //new user
                 $user = new User();
                 //set des valeurs
-                $user->setName($data["name"]);
-                $user->setFirstname($data["firstname"]);
-                $user->setEmail($data["email"]);
+                $user->setName(UtilsService::cleanInput($data["name"]));
+                $user->setFirstname(UtilsService::cleanInput($data["firstname"]));
+                $user->setEmail(UtilsService::cleanInput($data["email"]));
                 //création du hash
-                $pass = $data["password"];
+                $pass = UtilsService::cleanInput($data["password"]);
                 $hash = $this->hash->hashPassword($user, $pass);
                 $user->setPassword($hash);
-                $user->setToken(md5("tk".$data["name"].$data["firstname"].$data["email"].rand()."2023"));
+                $user->setToken(md5("tk".UtilsService::cleanInput($data["name"]).
+                UtilsService::cleanInput($data["firstname"]).UtilsService::cleanInput($data["email"]).rand()."2023"));
                 $user->setActivated(true);
                 $user->setRoles(["ROLE_USER"]);
                 //persist
