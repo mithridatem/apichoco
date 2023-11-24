@@ -116,58 +116,21 @@ class RegisterController extends AbstractController
         ],$groupe);
     }
     //recup token
-    #[Route('/user/token/v2', name: 'app_register_token')]
-    public function getToken(
-        Request $request,
-        UserRepository $repo,
-        UserPasswordHasherInterface $hash,
-        SerializerInterface $serializerInterface
-    ): Response {
+    #[Route('/user/token', name: 'app_register_token')]
+    public function getToken(Request $request){
         $json = $request->getContent();
-        //test le json est valide
-        if ($json) {
-            //décodage du json
-            $data = $serializerInterface->decode($json, 'json');
-            //récupération du compte
-            $user = $repo->findOneBy(["email" => $data["email"]]);
-
-            //test si le compte existe
-            if ($user) {
-
-                //test password valide
-                if ($hash->isPasswordValid($user, $data["password"])) {
-                    $token = $user->getToken();
-                    return $this->json(
-                        ["token" => $token, "id" => $user->getId()],
-                        200,
-                        ['Content-Type' => 'application/json', 'Access-Control-Allow-Origin' => '*']
-                    );
-                }
-                //test le password est invalide
-                else {
-                    return $this->json(
-                        ["error" => "password invalide"],
-                        400,
-                        ['Content-Type' => 'application/json', 'Access-Control-Allow-Origin' => '*']
-                    );
-                }
-            }
-            //test le compte n'existe pas
-            else {
-                return $this->json(
-                    ["error" => "informations de connexion invalide"],
-                    400,
-                    ['Content-Type' => 'application/json', 'Access-Control-Allow-Origin' => '*']
-                );
-            }
+        $message = "";
+        $code = 0;
+        if($json){
+            $data = $this->serializer->decode($json,'json');
+            $message = $this->apiToken->getToken($data['email'],$data['password']);
+            $code = 200;
+        }else{
+            $message = ["error"=>"Json Invalide"];
+            $code = 400;
         }
-        //test le json est invalide
-        else {
-            return $this->json(["error" => "json invalide"], 400, [
-                'Content-Type' => 'application/json',
-                'Access-Control-Allow-Origin' => '*'
-            ]);
-        }
+        return $this->json($message,$code,['Content-Type' => 'application/json',
+            'Access-Control-Allow-Origin' => '*']); 
     }
     //mise à jour user (sauf password)
     #[Route('/user/update', name: 'app_register_update')]
@@ -259,41 +222,34 @@ class RegisterController extends AbstractController
     }
     //méthode qui récupére les informations du compte par son nom et prénom
     #[Route('/user/info', name: 'app_register_info')]
-    public function getUserByInfo(
-        Request $request,
-        UserRepository $userRepository,
-        SerializerInterface $serializerInterface
-    ): Response {
+    public function getUserByInfo(Request $request,): Response {
+        $message = "";
+        $code = 200;
+        $groupe = [];
         $json = $request->getContent();
         //test si le json est valide
         if ($json) {
-            $data = $serializerInterface->decode($json, 'json');
-            $user = $userRepository->findOneBy(['name' => $data['name'], 'firstname' => $data['firstname']]);
+            $data = $this->serializer->decode($json, 'json');
+            $user = $this->userRepository->findOneBy(["name" => $data["name"],"firstname" => $data["firstname"]]);
+            //test si le compte existe
             if ($user) {
-                return $this->json(
-                    $user,
-                    200,
-                    ['Content-Type' => 'application/json', 'Access-Control-Allow-Origin' => '*'],
-                    ['groups' => 'user']
-                );
-            } else {
-                return $this->json(
-                    ['error' => 'Le compte n\'existe pas'],
-                    400,
-                    ['Content-Type' => 'application/json', 'Access-Control-Allow-Origin' => '*']
-                );
+                $message = $user;
+                $groupe = ['groups' => 'user'];
+            } 
+            //test le compte n'existe pas
+            else {
+                $message = ['error' => 'Le compte n\'existe pas'];
+                $code = 400;
             }
         }
         //test si le json est invalide
         else {
-            return $this->json(
-                ['error' => 'Json invalide'],
-                400,
-                ['Content-Type' => 'application/json', 'Access-Control-Allow-Origin' => '*']
-            );
+            $message = ['error' => 'Json invalide'];
+            $code = 200;
         }
+        return $this->json($message,$code,
+            ['Content-Type' => 'application/json', 'Access-Control-Allow-Origin' => '*'],$groupe);
     }
-
     //test password
     #[Route('/user/password/test', name: 'app_register_password_test')]
     public function testPassword(
@@ -337,13 +293,13 @@ class RegisterController extends AbstractController
     }
 
     //testToken2
-    #[Route('/user/token',name:'app_register_token_v2')]
-    public function getTokenV2(Request $request,SerializerInterface $serializerInterface){
+    #[Route('/user/token/v2',name:'app_register_token_v2')]
+    public function getTokenV2(Request $request){
         $json = $request->getContent();
         $message = "";
         $code = 0;
         if($json){
-            $data = $serializerInterface->decode($json,'json');
+            $data = $this->serializer->decode($json,'json');
             $message = $this->apiToken->getToken($data['email'],$data['password']);
             $code = 200;
         }else{
