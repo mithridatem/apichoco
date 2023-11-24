@@ -290,20 +290,26 @@ class RegisterController extends AbstractController
 
     //liste des utilisateurs trié par nom et prénom croissant
     #[Route('/user/all/{order}', name: 'app_register_all_order')]
-    public function getAllUserOrder(UserRepository $repo, $order): Response
+    public function getAllUserOrder($order): Response
     {
-        $users = $repo->findBy([], ['name' => $order, 'firstname' => $order], null, null);
+        $message = "";
+        $code = 200;
+        $groupe = [];
+        $users = $this->userRepository->findBy([], ["name" => $order, "firstname" => $order], null, null);
+        //test si il y à des utilisateurs
         if ($users) {
-            return $this->json($users, 200, [
-                'Content-Type' => 'application/json',
-                'Access-Control-Allow-Origin' => '*'
-            ], ['groups' => 'user']);
-        } else {
-            return $this->json(["error" => "La base est vide"], 400, [
-                'Content-Type' => 'application/json',
-                'Access-Control-Allow-Origin' => '*'
-            ]);
+            $message = $users;
+            $groupe = ['groups' => 'user'];
+        } 
+        //test la base est vide
+        else {
+            $message = ["error" => "La base est vide"];
+            $code = 400;
         }
+        return $this->json($message,$code, [
+            'Content-Type' => 'application/json',
+            'Access-Control-Allow-Origin' => '*'
+        ],$groupe);
     }
 
     //testToken2
