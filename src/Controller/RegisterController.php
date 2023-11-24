@@ -44,7 +44,6 @@ class RegisterController extends AbstractController
             $user->setEmail($data['email']);
             //création du hash
             $pass = $data['password'];
-            dd($pass);
             $hash = $hash->hashPassword($user, $pass);
             $user->setPassword($hash);
             $user->setToken(md5("tk".$data['name'].$data["firstname"]."2023"));
