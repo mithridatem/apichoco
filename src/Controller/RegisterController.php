@@ -97,20 +97,23 @@ class RegisterController extends AbstractController
     }
     //afficher la liste des utilisateurs
     #[Route('/user/all', name: 'app_register_all')]
-    public function getAllUser(UserRepository $repo): Response
-    {
-        $users = $repo->findAll();
+    public function getAllUser(): Response
+    {   $message = "";
+        $code = 200;
+        $groupe = [];
+        $users = $this->userRepository->findAll();
         if ($users) {
-            return $this->json($users, 200, [
-                'Content-Type' => 'application/json',
-                'Access-Control-Allow-Origin' => '*'
-            ], ['groups' => 'user']);
+            $message = $users;
+            $groupe = ['groups' => 'user'];
+
         } else {
-            return $this->json(["error" => "La base est vide"], 400, [
-                'Content-Type' => 'application/json',
-                'Access-Control-Allow-Origin' => '*'
-            ]);
+            $message = ["error" => "La base est vide"];
+            $code = 400;
         }
+        return $this->json($message,$code,[
+            'Content-Type' => 'application/json',
+            'Access-Control-Allow-Origin' => '*'
+        ],$groupe);
     }
     //recup token
     #[Route('/user/token/v2', name: 'app_register_token')]
