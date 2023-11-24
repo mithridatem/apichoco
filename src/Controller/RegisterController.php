@@ -61,7 +61,7 @@ class RegisterController extends AbstractController
                 $pass = $data["password"];
                 $hash = $this->hash->hashPassword($user, $pass);
                 $user->setPassword($hash);
-                $user->setToken(md5("tk".$data["name"].$data["firstname"]."2023"));
+                $user->setToken(md5("tk".$data["name"].$data["firstname"].rand()."2023"));
                 $user->setActivated(true);
                 $user->setRoles(["ROLE_USER"]);
                 //persist
@@ -171,18 +171,15 @@ class RegisterController extends AbstractController
     }
     //mise à jour user (sauf password)
     #[Route('/user/update', name: 'app_register_update')]
-    public function updateUser(
-        Request $request,
-        UserRepository $repo,
-        EntityManagerInterface $em,
-        SerializerInterface $serializerInterface
-    ): Response {
+    public function updateUser(Request $request): Response {
+        $message = "";
+        $code = 200;
         //recuperation du json
         $json = $request->getContent();
         //test le json est valide
         if ($json) {
-            $data = $serializerInterface->decode($json, 'json');
-            $user = $repo->findOneBy(["token" => $data["token"]]);
+            $data = $this->serializer->decode($json, 'json');
+            $user = $this->userRepository->findOneBy(["token" => $data["token"]]);
             //test le compte existe
             if ($user) {
                 //update
@@ -190,29 +187,25 @@ class RegisterController extends AbstractController
                 $user->setFirstname($data["firstname"]);
                 $user->setEmail($data["email"]);
                 //update du compte en BDD
-                $em->persist($user);
-                $em->flush();
-                //return json
-                return $this->json(["error" => "le compte a été modifié"], 200, [
-                    'Content-Type' => 'application/json',
-                    'Access-Control-Allow-Origin' => '*'
-                ]);
+                $this->em->persist($user);
+                $this->em->flush();
+                $message = ["error" => "le compte ".$user->getEmail()." a été modifié"];
             }
             //test le compte n'existe pas
             else {
-                return $this->json(["error" => "le compte n'existe pas"], 400, [
-                    'Content-Type' => 'application/json',
-                    'Access-Control-Allow-Origin' => '*'
-                ]);
+                $message = ["error" => "le compte n'existe pas"];
+                $code = 400;
             }
         }
         //test le json est invalide
         else {
-            return $this->json(["error" => "json invalide"], 400, [
-                'Content-Type' => 'application/json',
-                'Access-Control-Allow-Origin' => '*'
-            ]);
+            $message = ["error" => "json invalide"];
+            $code = 400;
         }
+        return $this->json($message,$code, [
+            'Content-Type' => 'application/json',
+            'Access-Control-Allow-Origin' => '*'
+        ]);
     }
     //update du password
     #[Route('/user/update/password', name: 'app_register_update_password')]
