@@ -60,28 +60,39 @@ class ChocoblastController extends AbstractController
     //méthode pour afficher tous les chocoblasts
     #[Route('/chocoblast/all', name:'app_chocoblast_all')]
     public function getAllChocoblast():Response{
+        $message = "";
+        $code = 200;
+        $groupes = [];
         $chocos = $this->chocoblastRepository->findAll();
-        //test si le chocoblast existe
+        //test si il existe des chocoblasts
         if($chocos){
-            return $this->json($chocos,200,['Content-Type'=>'application/json',
-            'Access-Control-Allow-Origin'=>'*'],['groups'=>'choco']);
+            $message = $chocos;
+            $groupes = ['groups'=>'choco'];
         }
         //test si le chocoblast n'existe pas
         else{
-            return $this->json(['error'=>'Aucun chocoblast en BDD'],400,['Content-Type'=>'application/json',
-            'Access-Control-Allow-Origin'=>'*']);
+            $message = ['error'=>'Aucun chocoblast en BDD'];
+            $code = 400;
         }
+        return $this->json($message,$code,['Content-Type'=>'application/json',
+            'Access-Control-Allow-Origin'=>'*'],$groupes);
     }
     //méthode pour afficher un chocoblast par son id
     #[Route('/chocoblast/id/{id}', name:'app_chocoblast_id')]
     public function getChocoblastById($id):Response{
+        $message = "";
+        $code = 200;
+        $groupes = [];
         $choco = $this->chocoblastRepository->find($id);
+        //test si le chocoblast existe
         if($choco){
-            return $this->json($choco,200,['Content-Type'=>'application/json',
-            'Access-Control-Allow-Origin'=>'*'],['groups'=>'choco']);
+            $message = $choco;
+            $groupes = ['groups'=>'choco'];
         }else{
-            return $this->json(['error'=>'le chocoblast n\'existe pas'],400,['Content-Type'=>'application/json',
-            'Access-Control-Allow-Origin'=>'*']);
+            $message = ['error'=>'le chocoblast n\'existe pas'];
+            $code = 400;
         }
+        return $this->json($message,$code,['Content-Type'=>'application/json',
+        'Access-Control-Allow-Origin'=>'*'],$groupes);
     }
 }
